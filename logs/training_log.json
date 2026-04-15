@@ -1,0 +1,18 @@
+[
+  {
+    "step": 1,
+    "loss": -0.0,
+    "mean_reward": 0.5,
+    "mean_advantage": 0.0,
+    "mean_seq_ratio": 1.0,
+    "fraction_clipped": 0.0
+  },
+  {
+    "step": 2,
+    "loss": -0.0,
+    "mean_reward": 0.5,
+    "mean_advantage": 0.0,
+    "mean_seq_ratio": 1.0,
+    "fraction_clipped": 0.0
+  }
+]
