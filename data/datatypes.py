@@ -32,6 +32,13 @@ class ActionType(str, Enum):
     GO_BACK = "GO_BACK"
     SCROLL = "SCROLL"
     STOP = "STOP"
+    HOVER = "HOVER"
+    PRESS = "PRESS"
+    GOTO = "GOTO"
+    NEW_TAB = "NEW_TAB"
+    TAB_FOCUS = "TAB_FOCUS"
+    CLOSE_TAB = "CLOSE_TAB"
+    GO_FORWARD = "GO_FORWARD"
 
     @classmethod
     def from_string(cls, s: str) -> "ActionType":
@@ -45,14 +52,28 @@ class ActionType(str, Enum):
                 return member
         # Fallback: try to infer from NNetNav/WebArena action format
         lowered = s.lower()
+        if lowered.startswith("go_forward"):
+            return cls.GO_FORWARD
+        if lowered.startswith("go_back"):
+            return cls.GO_BACK
+        if lowered.startswith("tab_focus"):
+            return cls.TAB_FOCUS
+        if lowered.startswith("close_tab"):
+            return cls.CLOSE_TAB
+        if lowered.startswith("new_tab"):
+            return cls.NEW_TAB
         if lowered.startswith("click"):
             return cls.CLICK
         if lowered.startswith("type"):
             return cls.TYPE
         if lowered.startswith("select"):
             return cls.SELECT
-        if lowered.startswith("go_back"):
-            return cls.GO_BACK
+        if lowered.startswith("hover"):
+            return cls.HOVER
+        if lowered.startswith("press"):
+            return cls.PRESS
+        if lowered.startswith("goto"):
+            return cls.GOTO
         if lowered.startswith("scroll"):
             return cls.SCROLL
         if lowered.startswith("stop"):
@@ -170,10 +191,24 @@ class WebAction:
             return f"select [{self.target_id}] [{self.value}]"
         if self.action_type == ActionType.GO_BACK:
             return "go_back"
+        if self.action_type == ActionType.GO_FORWARD:
+            return "go_forward"
         if self.action_type == ActionType.SCROLL:
             return f"scroll [{self.value}]"
         if self.action_type == ActionType.STOP:
             return f"stop [{self.value}]"
+        if self.action_type == ActionType.HOVER:
+            return f"hover [{self.target_id}]"
+        if self.action_type == ActionType.PRESS:
+            return f"press [{self.value}]"
+        if self.action_type == ActionType.GOTO:
+            return f"goto [{self.value}]"
+        if self.action_type == ActionType.NEW_TAB:
+            return "new_tab"
+        if self.action_type == ActionType.TAB_FOCUS:
+            return f"tab_focus [{self.target_id}]"
+        if self.action_type == ActionType.CLOSE_TAB:
+            return "close_tab"
         return self.raw
 
     @classmethod
@@ -193,36 +228,45 @@ class WebAction:
         s = action_str.strip()
         action_type = ActionType.from_string(s)
 
-        if action_type == ActionType.CLICK:
-            target_id = _extract_first_int(s)
-            return cls(action_type=action_type, target_id=target_id, raw=s)
-
-        if action_type == ActionType.TYPE:
-            # type [id] [content] [press_enter]
-            parts = _extract_bracketed_parts(s)
-            target_id = int(parts[0]) if parts and parts[0].isdigit() else -1
-            value = parts[1] if len(parts) > 1 else ""
-            return cls(action_type=action_type, target_id=target_id, value=value, raw=s)
-
-        if action_type == ActionType.SELECT:
-            parts = _extract_bracketed_parts(s)
-            target_id = int(parts[0]) if parts and parts[0].isdigit() else -1
-            value = parts[1] if len(parts) > 1 else ""
-            return cls(action_type=action_type, target_id=target_id, value=value, raw=s)
-
         if action_type == ActionType.GO_BACK:
             return cls(action_type=action_type, raw=s)
-
+ 
+        if action_type == ActionType.GO_FORWARD:
+            return cls(action_type=action_type, raw=s)
+ 
+        if action_type == ActionType.NEW_TAB:
+            return cls(action_type=action_type, raw=s)
+ 
+        if action_type == ActionType.CLOSE_TAB:
+            return cls(action_type=action_type, raw=s)
+ 
         if action_type == ActionType.SCROLL:
             parts = _extract_bracketed_parts(s)
             value = parts[0] if parts else "down"
             return cls(action_type=action_type, value=value, raw=s)
-
+ 
         if action_type == ActionType.STOP:
             parts = _extract_bracketed_parts(s)
             value = parts[0] if parts else ""
             return cls(action_type=action_type, value=value, raw=s)
-
+ 
+        if action_type == ActionType.HOVER:
+            target_id = _extract_first_int(s)
+            return cls(action_type=action_type, target_id=target_id, raw=s)
+ 
+        if action_type == ActionType.PRESS:
+            parts = _extract_bracketed_parts(s)
+            value = parts[0] if parts else ""
+            return cls(action_type=action_type, value=value, raw=s)
+ 
+        if action_type == ActionType.GOTO:
+            parts = _extract_bracketed_parts(s)
+            value = parts[0] if parts else s.split(None, 1)[-1]
+            return cls(action_type=action_type, value=value, raw=s)
+ 
+        if action_type == ActionType.TAB_FOCUS:
+            target_id = _extract_first_int(s)
+            return cls(action_type=action_type, target_id=target_id, raw=s)
         return cls(action_type=action_type, raw=s)
 
     @property

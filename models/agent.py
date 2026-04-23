@@ -16,7 +16,7 @@ import torch.nn as nn
 from typing import Optional, Tuple, List
 
 from config import DynaWebConfig
-from data.types import WebInteraction, WebState, WebAction
+from data.datatypes import WebInteraction, WebState, WebAction
 from utils.prompt import format_agent_prompt, parse_agent_output
 
 

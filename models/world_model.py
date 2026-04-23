@@ -16,7 +16,7 @@ import torch.nn as nn
 from typing import Tuple, Optional
 
 from config import DynaWebConfig
-from data.types import WebState, WebAction, StateChange, ActionType
+from data.datatypes import WebState, WebAction, StateChange, ActionType
 from utils.prompt import format_world_model_prompt, parse_wm_output
 
 

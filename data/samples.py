@@ -9,7 +9,7 @@ Store real data at:
     data/raw/val.jsonl
 """
 
-from data.types import (
+from data.datatypes import (
     WebInteraction, WebState, WebAction, StateChange, ActionType
 )
 

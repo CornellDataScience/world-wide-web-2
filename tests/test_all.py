@@ -1,3 +1,4 @@
+
 """
 tests/test_all.py
 
@@ -42,7 +43,7 @@ def check(name: str, condition: bool, detail: str = ""):
 
 def test_action_parsing():
     print("\n[1] ActionType + WebAction parsing")
-    from data.types import WebAction, ActionType
+    from data.datatypes import WebAction, ActionType
 
     a = WebAction.from_string("click [7]")
     check("click parsed", a.action_type == ActionType.CLICK)
@@ -70,7 +71,7 @@ def test_action_parsing():
 
 def test_web_state():
     print("\n[2] WebState")
-    from data.types import WebState
+    from data.datatypes import WebState
 
     s = WebState.from_acc_tree("[button id=1 'Home']\n[textbox id=2 'Search']", url="https://ex.com")
     check("acc_tree stored", "button" in s.acc_tree)
@@ -82,7 +83,7 @@ def test_web_state():
 
 def test_state_change():
     print("\n[3] StateChange")
-    from data.types import WebState, WebAction, StateChange, ActionType
+    from data.datatypes import WebState, WebAction, StateChange, ActionType
 
     pre = WebState.from_acc_tree("[button id=1 'Submit']")
     post = WebState.from_acc_tree("[heading id=10 'Success']")
@@ -104,7 +105,7 @@ def test_state_change():
 
 def test_web_interaction_from_raw():
     print("\n[4] WebInteraction.from_raw_data — Format A (actions list)")
-    from data.types import WebInteraction
+    from data.datatypes import WebInteraction
 
     raw_a = {
         "task": "Search for Python",
@@ -296,7 +297,7 @@ def test_world_model_stub():
     print("\n[9] WebWorldModel (stub)")
     from config import DynaWebConfig
     from models.world_model import WebWorldModel
-    from data.types import WebState, WebAction, ActionType
+    from data.datatypes import WebState, WebAction, ActionType
 
     config = DynaWebConfig(use_stub_models=True)
     wm = WebWorldModel(config)
@@ -437,7 +438,7 @@ def test_rollout_engine():
     from models.world_model import WebWorldModel
     from models.reward import SelfAssessReward
     from training.rollout import DreamingRolloutEngine
-    from data.types import WebState
+    from data.datatypes import WebState
 
     config = DynaWebConfig(use_stub_models=True, dream_length=3, rollout_n=2)
     agent = AgentPolicy(config)
@@ -485,7 +486,7 @@ def test_mixer():
     from training.rollout import DreamingRolloutEngine
     from training.mixer import TrajectoryMixer
     from data.dataset import NNetNavDataset
-    from data.types import WebState
+    from data.datatypes import WebState
     import torch
 
     config = DynaWebConfig(use_stub_models=True, dream_length=2, rollout_n=2, real_traj_ratio=0.5)

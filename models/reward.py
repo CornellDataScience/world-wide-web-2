@@ -12,7 +12,7 @@ import torch
 from typing import List
 
 from config import DynaWebConfig
-from data.types import WebInteraction
+from data.datatypes import WebInteraction
 from utils.prompt import format_reward_prompt
 
 
