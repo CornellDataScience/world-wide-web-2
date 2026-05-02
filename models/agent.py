@@ -77,8 +77,9 @@ class AgentPolicy(nn.Module):
             model_name,
             quantization_config=quantization_config,
             device_map=getattr(self.config, "device", "auto"),
-            torch_dtype=torch.bfloat16,
+            dtype=torch.bfloat16,
             trust_remote_code=True,
+            use_safetensors=False,
         )
 
         self.model.config.use_cache = False
