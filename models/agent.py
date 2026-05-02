@@ -15,7 +15,7 @@ import torch
 import torch.nn as nn
 from typing import Optional, Tuple, List
 
-from config import DynaWebConfig
+from dynaweb_config import DynaWebConfig
 from data.types import WebInteraction, WebState, WebAction
 from utils.prompt import format_agent_prompt, parse_agent_output
 
@@ -41,22 +41,75 @@ class AgentPolicy(nn.Module):
             self._load_real_model()
 
     def _load_real_model(self):
-        from transformers import AutoModelForCausalLM, AutoTokenizer
+        from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+        from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
         import torch
 
-        print(f"[AgentPolicy] Loading {self.config.agent_model_name} ...")
-        self.tokenizer = AutoTokenizer.from_pretrained(self.config.agent_model_name)
-        self.tokenizer.pad_token = self.tokenizer.eos_token
+        model_name = getattr(
+            self.config,
+            "agent_model_name",
+            "stanfordnlp/llama8b-nnetnav-live",
+        )
+
+        print(f"[AgentPolicy] Loading {model_name} with 4-bit quantization + LoRA ...")
+
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            model_name,
+            trust_remote_code=True,
+        )
+
+        if self.tokenizer.pad_token is None:
+            self.tokenizer.pad_token = self.tokenizer.eos_token
+
         self.tokenizer.padding_side = "left"
 
-        dtype = torch.bfloat16 if self.config.precision == "bfloat16" else torch.float32
+        quantization_config = None
+
+        if getattr(self.config, "use_4bit", True):
+            quantization_config = BitsAndBytesConfig(
+                load_in_4bit=True,
+                bnb_4bit_quant_type="nf4",
+                bnb_4bit_use_double_quant=True,
+                bnb_4bit_compute_dtype=torch.bfloat16,
+            )
+
         self.model = AutoModelForCausalLM.from_pretrained(
-            self.config.agent_model_name,
-            torch_dtype=dtype,
-            device_map=self.config.device,
+            model_name,
+            quantization_config=quantization_config,
+            device_map=getattr(self.config, "device", "auto"),
+            torch_dtype=torch.bfloat16,
+            trust_remote_code=True,
         )
-        self.model.eval()
-        print(f"[AgentPolicy] Loaded.")
+
+        self.model.config.use_cache = False
+
+        if getattr(self.config, "use_lora", True):
+            if getattr(self.config, "use_4bit", True):
+                self.model = prepare_model_for_kbit_training(self.model)
+
+            lora_config = LoraConfig(
+                r=getattr(self.config, "lora_r", 16),
+                lora_alpha=getattr(self.config, "lora_alpha", 32),
+                lora_dropout=getattr(self.config, "lora_dropout", 0.05),
+                bias="none",
+                task_type="CAUSAL_LM",
+                target_modules=[
+                    "q_proj",
+                    "k_proj",
+                    "v_proj",
+                    "o_proj",
+                    "gate_proj",
+                    "up_proj",
+                    "down_proj",
+                ],
+            )
+
+            self.model = get_peft_model(self.model, lora_config)
+            self.model.print_trainable_parameters()
+
+        self.model.train()
+
+        print("[AgentPolicy] Loaded NNetNav with 4-bit quantization + LoRA.")
 
     def forward(self, input_ids: torch.Tensor, attention_mask: torch.Tensor):
         """Standard forward pass. Returns CausalLMOutput."""
@@ -157,9 +210,8 @@ class AgentPolicy(nn.Module):
         if self.config.use_stub_models:
             return self._stub_log_probs(input_ids, labels)
 
-        with torch.no_grad():
-            out = self.model(input_ids=input_ids)
-            logits = out.logits  # [B, L, vocab]
+        out = self.model(input_ids=input_ids)
+        logits = out.logits
 
         log_probs = torch.log_softmax(logits, dim=-1)  # [B, L, vocab]
 
@@ -218,3 +270,8 @@ class AgentPolicy(nn.Module):
         prompt_len = inputs["input_ids"].shape[1]
         response = self.tokenizer.decode(out[0, prompt_len:], skip_special_tokens=True)
         return parse_reward_output(response)
+    
+    def save_adapter(self, save_dir: str):
+        self.model.save_pretrained(save_dir)
+        self.tokenizer.save_pretrained(save_dir)
+        print(f"[AgentPolicy] Saved LoRA adapter to {save_dir}")

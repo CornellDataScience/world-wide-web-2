@@ -22,7 +22,7 @@ import argparse
 # Make sure project root is on path regardless of where script is called from
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from config import DynaWebConfig
+from dynaweb_config import DynaWebConfig
 from data.dataset import NNetNavDataset
 from models.agent import AgentPolicy
 from models.world_model import WebWorldModel

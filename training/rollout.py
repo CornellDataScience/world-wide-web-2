@@ -15,7 +15,7 @@ Per Section 3.3:
 import torch
 from typing import List, Tuple
 
-from config import DynaWebConfig
+from dynaweb_config import DynaWebConfig
 from data.types import WebInteraction, WebState, WebAction, StateChange
 from models.agent import AgentPolicy
 from models.world_model import WebWorldModel

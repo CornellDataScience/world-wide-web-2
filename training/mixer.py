@@ -15,7 +15,7 @@ import random
 import torch
 from typing import List, Tuple, Optional
 
-from config import DynaWebConfig
+from dynaweb_config import DynaWebConfig
 from data.types import WebInteraction
 from data.dataset import NNetNavDataset
 from utils.prompt import format_agent_prompt

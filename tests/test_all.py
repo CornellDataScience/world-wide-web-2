@@ -256,7 +256,7 @@ def test_prompt_formatting():
 
 def test_agent_stub():
     print("\n[8] AgentPolicy (stub)")
-    from config import DynaWebConfig
+    from dynaweb_config import DynaWebConfig
     from models.agent import AgentPolicy
     import torch
 
@@ -294,7 +294,7 @@ def test_agent_stub():
 
 def test_world_model_stub():
     print("\n[9] WebWorldModel (stub)")
-    from config import DynaWebConfig
+    from dynaweb_config import DynaWebConfig
     from models.world_model import WebWorldModel
     from data.types import WebState, WebAction, ActionType
 
@@ -328,7 +328,7 @@ def test_world_model_stub():
 
 def test_reward_fn():
     print("\n[10] SelfAssessReward (stub)")
-    from config import DynaWebConfig
+    from dynaweb_config import DynaWebConfig
     from models.agent import AgentPolicy
     from models.reward import SelfAssessReward
     from data.samples import make_sample_interactions
@@ -370,7 +370,7 @@ def test_gspo():
         gspo_loss,
         compute_full_gspo_loss,
     )
-    from config import DynaWebConfig
+    from dynaweb_config import DynaWebConfig
     from models.agent import AgentPolicy
     import torch
 
@@ -432,7 +432,7 @@ def test_gspo():
 
 def test_rollout_engine():
     print("\n[12] DreamingRolloutEngine (stub)")
-    from config import DynaWebConfig
+    from dynaweb_config import DynaWebConfig
     from models.agent import AgentPolicy
     from models.world_model import WebWorldModel
     from models.reward import SelfAssessReward
@@ -478,7 +478,7 @@ def test_rollout_engine():
 
 def test_mixer():
     print("\n[13] TrajectoryMixer (stub)")
-    from config import DynaWebConfig
+    from dynaweb_config import DynaWebConfig
     from models.agent import AgentPolicy
     from models.world_model import WebWorldModel
     from models.reward import SelfAssessReward
@@ -525,7 +525,7 @@ def test_mixer():
 
 def test_full_training_loop():
     print("\n[14] Full training loop (stub, 1 step)")
-    from config import DynaWebConfig
+    from dynaweb_config import DynaWebConfig
     from data.dataset import NNetNavDataset
     from models.agent import AgentPolicy
     from models.world_model import WebWorldModel

@@ -23,7 +23,7 @@ import json
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from config import DynaWebConfig
+from dynaweb_config import DynaWebConfig
 from data.dataset import NNetNavDataset
 from utils.prompt import format_wm_prompt_from_state_change
 

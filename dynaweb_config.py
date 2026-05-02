@@ -18,7 +18,8 @@ class DynaWebConfig:
     # Point these at local paths or HuggingFace repo IDs.
     # Both agent and world model use LLaMA in this implementation.
     # ---------------------------------------------------------------
-    agent_model_name: str = "meta-llama/Llama-3.1-8B-Instruct"
+    #agent_model_name: str = "meta-llama/Llama-3.1-8B-Instruct"
+    agent_model_name: str = "stanfordnlp/llama8b-nnetnav-live"
     wm_model_name: str = "meta-llama/Llama-3.1-8B-Instruct"
 
     # ---------------------------------------------------------------
@@ -38,6 +39,7 @@ class DynaWebConfig:
     real_traj_ratio: float = 0.5     # paper uses 0.5
     eps_clip: float = 0.2
     max_grad_norm: float = 1.0
+    save_every_n_steps: int = 50
 
     # ---------------------------------------------------------------
     # Generation
@@ -70,6 +72,12 @@ class DynaWebConfig:
     # ---------------------------------------------------------------
     device: str = "cuda"
     precision: str = "bfloat16"
+    use_4bit: bool = True
+    use_lora: bool = True
+
+    lora_r: int = 16
+    lora_alpha: int = 32
+    lora_dropout: float = 0.05
 
     # ---------------------------------------------------------------
     # Paths — relative to project root

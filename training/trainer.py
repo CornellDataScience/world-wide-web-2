@@ -20,7 +20,7 @@ from torch.optim import AdamW
 from torch.utils.data import DataLoader
 from typing import List, Dict, Optional
 
-from config import DynaWebConfig
+from dynaweb_config import DynaWebConfig
 from data.types import WebInteraction, WebState
 from data.dataset import NNetNavDataset, collate_interactions
 from models.agent import AgentPolicy
