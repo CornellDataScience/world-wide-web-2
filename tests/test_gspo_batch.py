@@ -38,7 +38,11 @@ def main():
         },
     ]
 
-    mixer = TrajectoryMixer(config)
+    mixer = mixer = TrajectoryMixer(
+        sft_dataset=None,
+        config=config,
+        tokenizer=policy.tokenizer,
+    )
 
     batch = mixer.to_gspo_batch(
         interactions=interactions,
