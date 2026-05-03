@@ -2,9 +2,38 @@ import torch
 
 from dynaweb_config import DynaWebConfig
 from models.agent import AgentPolicy
+from training import mixer
 from training.mixer import TrajectoryMixer
-from data.types import WebInteraction
+from data.types import WebInteraction, WebState, WebAction, StateChange
 
+
+def make_fake_interaction(i: int):
+    pre = WebState.from_acc_tree(
+        acc_tree=f"[button id=1 'Search']",
+        url=f"https://example.com/{i}"
+    )
+
+    post = WebState.from_acc_tree(
+        acc_tree=f"[input id=2 'Query box']",
+        url=f"https://example.com/{i}/next"
+    )
+
+    action = WebAction.from_string("click [1]")
+
+    state_change = StateChange(
+        pre_state=pre,
+        action=action,
+        post_state=post
+    )
+
+    return WebInteraction(
+        task=f"Fake task {i}",
+        website="example.com",
+        state_changes=[state_change],
+        reward=1.0,
+        final_state=post,
+        is_real=True
+    )
 
 
 def main():
@@ -16,43 +45,6 @@ def main():
     policy = AgentPolicy(config)
     
 
-    interactions = [
-        WebInteraction(
-            task="Find the contact page.",
-            observations=["You are on a search page."],
-            actions=["click [3]"],
-            reward=1.0,
-            is_real=True,
-        ),
-        WebInteraction(
-            task="Add item to cart.",
-            observations=["You are on a product page."],
-            actions=["click [7]"],
-            reward=1.0,
-            is_real=True,
-        ),
-        WebInteraction(
-            task="Enter the username.",
-            observations=["A form is visible."],
-            actions=["type [2] mihir"],
-            reward=1.0,
-            is_real=True,
-        ),
-        WebInteraction(
-            task="Submit the form.",
-            observations=["You are on a login page."],
-            actions=["click [5]"],
-            reward=0.0,
-            is_real=True,
-        ),
-        WebInteraction(
-            task="Open the first result.",
-            observations=["Search results are visible."],
-            actions=["click [1]"],
-            reward=1.0,
-            is_real=True,
-        ),
-    ]
 
     tokenizer = policy.tokenizer
 
@@ -86,10 +78,19 @@ def main():
     )
 
     batch = mixer.to_gspo_batch(
-        mixed=interactions,
+        mixed=[make_fake_interaction(i) for i in range(5)],
         device="cuda" 
         if torch.cuda.is_available() else "cpu",
     )
+    
+    print(batch["input_ids"].shape)
+    print(batch["labels"].shape)
+    
+    labels = batch["labels"][0]
+
+    print("masked (prompt):", (labels == -100).sum().item())
+    print("scored (response):", (labels != -100).sum().item())
+
 
     input_ids = batch["input_ids"]
     labels = batch["labels"]
