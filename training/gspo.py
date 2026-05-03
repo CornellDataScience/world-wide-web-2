@@ -160,7 +160,7 @@ def compute_full_gspo_loss(
     loss = gspo_loss(seq_ratios, advantages, eps=eps)
 
     diagnostics = {
-        "loss": loss.item(),
+        "loss": loss.m(),
         "mean_reward": rewards.mean().item(),
         "mean_advantage": advantages.mean().item(),
         "mean_seq_ratio": seq_ratios.mean().item(),

@@ -3,6 +3,8 @@ import torch
 from dynaweb_config import DynaWebConfig
 from models.agent import AgentPolicy
 from training.mixer import TrajectoryMixer
+from data.types import WebInteraction
+
 
 
 def main():
@@ -12,6 +14,45 @@ def main():
 
     print("Loading AgentPolicy...")
     policy = AgentPolicy(config)
+    
+
+    interactions = [
+        WebInteraction(
+            task="Find the contact page.",
+            observations=["You are on a search page."],
+            actions=["click [3]"],
+            reward=1.0,
+            is_real=True,
+        ),
+        WebInteraction(
+            task="Add item to cart.",
+            observations=["You are on a product page."],
+            actions=["click [7]"],
+            reward=1.0,
+            is_real=True,
+        ),
+        WebInteraction(
+            task="Enter the username.",
+            observations=["A form is visible."],
+            actions=["type [2] mihir"],
+            reward=1.0,
+            is_real=True,
+        ),
+        WebInteraction(
+            task="Submit the form.",
+            observations=["You are on a login page."],
+            actions=["click [5]"],
+            reward=0.0,
+            is_real=True,
+        ),
+        WebInteraction(
+            task="Open the first result.",
+            observations=["Search results are visible."],
+            actions=["click [1]"],
+            reward=1.0,
+            is_real=True,
+        ),
+    ]
 
     tokenizer = policy.tokenizer
 
