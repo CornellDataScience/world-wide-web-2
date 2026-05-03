@@ -46,8 +46,8 @@ def main():
 
     batch = mixer.to_gspo_batch(
         mixed=interactions,
-        tokenizer=tokenizer,
-        device="cuda" if torch.cuda.is_available() else "cpu",
+        device="cuda" 
+        if torch.cuda.is_available() else "cpu",
     )
 
     input_ids = batch["input_ids"]
