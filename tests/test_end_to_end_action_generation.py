@@ -83,7 +83,7 @@ Provide REASON then ACTION:"""
     with torch.no_grad():
         output_ids = model.generate(
             **encoded,
-            max_new_tokens=64,
+            max_new_tokens=160,
             do_sample=False,
             pad_token_id=tokenizer.eos_token_id,
         )
