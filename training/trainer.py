@@ -21,7 +21,7 @@ from torch.utils.data import DataLoader
 from typing import List, Dict, Optional
 
 from dynaweb_config import DynaWebConfig
-from data.types import WebInteraction, WebState
+from data.datatypes import WebInteraction, WebState
 from data.dataset import NNetNavDataset, collate_interactions
 from models.agent import AgentPolicy
 from models.world_model import WebWorldModel

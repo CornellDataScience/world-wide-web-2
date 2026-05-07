@@ -47,7 +47,7 @@ try:
 except ImportError:
     _BASE = object   # graceful fallback when torch is not installed
 
-from data.types import WebInteraction, WebState
+from data.datatypes import WebInteraction, WebState
 from data.samples import make_sample_interactions
 
 

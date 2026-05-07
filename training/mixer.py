@@ -16,7 +16,7 @@ import torch
 from typing import List, Tuple, Optional
 
 from dynaweb_config import DynaWebConfig
-from data.types import WebInteraction
+from data.datatypes import WebInteraction
 from data.dataset import NNetNavDataset
 from utils.prompt import format_agent_prompt
 
